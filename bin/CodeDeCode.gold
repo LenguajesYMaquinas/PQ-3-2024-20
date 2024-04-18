@@ -1,0 +1,49 @@
+// -----------------------
+// 01132 -> 0+10+2-1
+// Silvia Takahashi
+// UNIVERSIDAD DE LOS ANDES
+//  Coder - Decoder
+//   Coder:   
+// A finite state transducer
+//    
+//  Coder - decoder
+//    coder:
+//      input  d0‥.dn 
+//      outputs  d0r1‥.rn
+//       ri = +  (di-d(i-1)) if  di > d(i-1) 
+//    ri = - d(i-1)-di  if  di < d(i-1)
+//  ri =0 if  d(i-1)= di   
+///  Decoder: 
+///   decodes and checks
+//-----------------------
+
+using gold.**
+  
+         
+   var  Alph  
+
+procedure main(args:String[]) begin
+ 	    
+ 	  
+  
+  Alph =  ('0'‥'9')
+	
+	  
+
+  			
+	coder:= Coder.createTransducer(Alph)
+   
+   deCoder:=DeCoder.createTransducer(Alph)
+   
+    
+    
+  //GAutomataFrame.show(coder)
+  //GAutomataFrame.show(deCoder)
+   
+ 	print "Input  a string of (0‥9)"
+ 	
+  Utilities.testCodeDecode(coder, deCoder)
+		
+end
+
+

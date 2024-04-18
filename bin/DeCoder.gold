@@ -1,0 +1,92 @@
+using gold.**
+// -----------------------
+// Silvia Takahashi
+// UNIVERSIDAD DE LOS ANDES
+//------------------------------
+// 
+//  
+//  
+//  
+//  
+
+var  Alph 
+
+procedure main(args:String[]) begin
+ 	    
+ 	  
+  Alph:=('0'‥'9')∪{'+','-'}
+	
+	print "Input strings of the form D0R1‥.Rn  where  "
+	print "   D0 is a digit and Ri is 0 or +Digit or -Digit"
+
+	
+	decoder:= createTransducer(Alph)
+			
+	//GAutomataFrame.show(decoder)
+	Utilities.test(decoder)
+end
+
+
+
+
+function createTransducer(A):ITransducer begin
+	Q := (('0'‥'9')×{'+','-', '*'}×{true, false})∪{⟨'I', '*', false⟩, ⟨'E', '*', false⟩}
+	Σ:= ('0'‥'9')∪{'+','-'}
+	O:= ('0'‥'9')
+	q₀:= ⟨'I', '*', false⟩
+	F:=Q\{⟨'E', '*', false⟩}  
+	return GDeterministicTransducer(Q,Σ,O,q₀,F,δ,g,h)
+end
+
+
+ 
+
+function δ(⟨simbolo, signo, esMasOMenos⟩,σ) begin
+	
+	// Transicion especifica para que el error no acepte el caso que dice el enunciado: 3+0
+	if esMasOMenos = true and σ = '0' then return ⟨'E', '*', false⟩
+		
+	// Transicion para cuando se le pasan dos numeros seguidos y el sgundo no es 0 (esto es error)
+	elseif esMasOMenos=false and simbolo!='I' and σ∈('1'‥'9') then return ⟨'E', '*', false⟩
+	
+	// Transicion para cuando se recibe un numero desde el estado inicial
+	elseif ⟨simbolo, signo, esMasOMenos⟩ = ⟨'I', '*', false⟩ and σ∈('0'‥'9') then return ⟨σ, signo, false⟩
+	// Transicion para cuando se recibe un + o - desde el estado inicial
+	elseif simbolo != 'E' and simbolo != 'I' and signo = '*' and (σ='+' or σ='-') then return ⟨simbolo, σ, true⟩
+	// Tansicion para cuando se leen 0s desde el estado despues del incial, o sea, el primer numero se repite
+	elseif simbolo != 'E' and simbolo != 'I' and signo = '*' and σ∈('0'‥'9') then return ⟨simbolo, signo, false⟩
+	
+	// Transicion para cuando se recibe un numero y no se está en el estado inicial
+	//elseif signo != '*' and σ∈('1'‥'9') then return ⟨σ, signo⟩
+	// El anterior se desglosa en los siguientes dos para poder sumar o restar en las transiciones
+	elseif signo = '+' and σ∈('1'‥'9') and ((Integer.parseInt(simbolo) + Integer.parseInt(σ)) <= 9) then return ⟨Character.forDigit(Integer.parseInt(simbolo) + Integer.parseInt(σ), 10), signo, false⟩
+	elseif signo = '-' and σ∈('1'‥'9') and ((Integer.parseInt(simbolo) - Integer.parseInt(σ)) >= 0) then return ⟨Character.forDigit(Integer.parseInt(simbolo) - Integer.parseInt(σ), 10), signo, false⟩
+	
+	// Transicion para cuando se recibe un 0 y no se está en el estado inicial, es decir, el numero a escribir debe ser el mismo del anterior porque son iguales
+	elseif signo != '*' and σ='0' then return ⟨simbolo, signo, false⟩
+		
+	// Transicion para cuando se recibe un + o - desde un estado que no es el inicial
+	elseif signo != '*' and σ∈{'+', '-'} then return ⟨simbolo, σ, true⟩
+		
+	// Transicion de error
+	else return ⟨'E', '*', false⟩
+	end
+
+end
+  
+function g(⟨simbolo, signo⟩) begin
+     return λ 
+end
+
+function h(⟨simbolo, signo⟩,s) begin
+     if ⟨simbolo, signo⟩ = ⟨'I', '*'⟩ and s∈('0'‥'9') then return s
+     elseif s='0' and simbolo∈('0'‥'9') then return simbolo
+     elseif signo = '+' and s∈('1'‥'9') and ((Integer.parseInt(simbolo) + Integer.parseInt(s)) <= 9) then return Integer.parseInt(s)+Integer.parseInt(simbolo)
+     elseif signo = '-' and s∈('1'‥'9') and ((Integer.parseInt(simbolo) - Integer.parseInt(s)) >= 0) then return Integer.parseInt(simbolo)-Integer.parseInt(s)
+     else return λ 
+     	
+     end
+end
+
+
+ 

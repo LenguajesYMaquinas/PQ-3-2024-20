@@ -1,0 +1,57 @@
+using gold.**
+// -----------------------
+// Silvia Takahashi
+// UNIVERSIDAD DE LOS ANDES
+//------------------------------
+// 
+//  Coder - decoder
+//    coder:
+//      input  d0‥.dn 
+//      outputs  d0r1‥.rn
+//       ri = +  (di-d(i-1)) if  di > d(i-1) 
+//    ri = - d(i-1)-di  if  di < d(i-1)
+//  ri =0 if  d(i-1)= di   
+
+var  Alph 
+
+procedure main(args:String[]) begin
+Alph := ('0'‥'9')
+   coder:=createTransducer(Alph)
+	print "Input strings of  (0..9)"
+				
+	Utilities.test(coder)
+end
+
+
+
+
+function createTransducer(A):ITransducer begin
+	Q := {"I"} ∪(0‥9)
+	print Q
+	
+	Σ:= ('0'‥'9')
+	O := ('0'‥'9')∪{'+','-'}
+	q₀:="I"
+	F:= Q 
+	return GDeterministicTransducer(Q,Σ,O,q₀,F,δ,g,h)
+end
+
+
+
+ g(x):= λ
+
+
+function δ(q,σ) begin
+   return σ-'0' 
+ end
+  
+function h(q,σ) begin
+   d := σ- '0' 
+   if q="I" then return d
+   elseif d=q then return "0"
+   elseif d>q then return "+"+(d-q) 
+   else return "-"+(q-d) 	
+end
+end
+
+ 
